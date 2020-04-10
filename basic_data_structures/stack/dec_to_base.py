@@ -1,7 +1,6 @@
 from nose.tools import assert_equal, assert_raises
 from stack import Stack
 
-
 # converts dec input to hex string
 def dec_to_base(dec_input, target_base=2):
     validate(dec_input, target_base)
