@@ -39,7 +39,7 @@ class SinglyLinkedList:
         return self.head is None
 
     # add at the beginning
-    def add_b(self, item):
+    def add(self, item):
         if type(item) == Node:
             raise TypeError
 
@@ -100,7 +100,7 @@ class SinglyLinkedList:
 
     def insert(self, position, element):
         if position == 0:
-            return self.add_b(element)
+            return self.add(element)
         current = self.head
         counter = 0
         while current is not None:
@@ -140,15 +140,15 @@ def test_list():
     list_ = SinglyLinkedList()
     assert_true(list_.is_empty())
     assert_equal(0, list_.size())
-    list_.add_b(5)
+    list_.add(5)
     assert_false(list_.is_empty())
-    list_.add_b(7)
+    list_.add(7)
     assert_equal(2, list_.size())
     assert_false(list_.search(11))
     assert_true(list_.search(5))
-    assert_raises(TypeError, list_.add_b, Node(3))
-    list_.add_b(11)
-    list_.add_b(13)
+    assert_raises(TypeError, list_.add, Node(3))
+    list_.add(11)
+    list_.add(13)
     assert_equal("Node(13) -> Node(11) -> Node(7) -> Node(5) -> ", str(list_))
     list_.remove(7)
     assert_equal("Node(13) -> Node(11) -> Node(5) -> ", str(list_))
