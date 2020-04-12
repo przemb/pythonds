@@ -80,12 +80,15 @@ class SinglyLinkedList:
             current = current.get_next()
         return False
 
-    def append(self, element):
-        current = self.head
-        while current.get_next() is not None:
-            current = current.get_next()
-        new = Node(element)
-        current.set_next(new)
+    def append(self, elem):
+        new = Node(elem)
+        if self.is_empty():
+            self.head = new
+        else:
+            current = self.head
+            while current.get_next() is not None:
+                current = current.get_next()
+            current.set_next(new)
 
     def index(self, element):
         counter = 0
@@ -93,10 +96,22 @@ class SinglyLinkedList:
         while current is not None:
             if current.get_data() == element:
                 return counter
-
             current = current.get_next()
             counter = counter + 1
         return False
+
+    def slice(self, start, stop):
+        if start < 0 or stop < 0 or start > self.size() - 1 or stop > self.size():
+            raise IndexError
+        current = self.head
+        slice_ = SinglyLinkedList()
+        counter = 0
+        while current is not None:
+            if start <= counter < stop:
+                slice_.append(current.get_data())
+            current = current.get_next()
+            counter = counter + 1
+        return slice_
 
     def insert(self, position, element):
         if position == 0:
@@ -170,6 +185,12 @@ def test_list():
     assert_equal("Node(a) -> Node(11) -> Node(1) -> Node(12) -> ", str(list_))
     list_.insert(2, "b")
     assert_equal("Node(a) -> Node(11) -> Node(b) -> Node(1) -> Node(12) -> ", str(list_))
+
+    slice_list = list_.slice(0, 2)
+    assert_equal("Node(a) -> Node(11) -> ", str(slice_list))
+    slice_list = list_.slice(1, 5)
+    assert_equal("Node(11) -> Node(b) -> Node(1) -> Node(12) -> ", str(slice_list))
+
     assert_false(list_.insert(100, "Y"))
     assert_equal("Node(a) -> Node(11) -> Node(b) -> Node(1) -> Node(12) -> ", str(list_))
     list_.pop()

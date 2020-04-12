@@ -82,6 +82,11 @@ def test_list():
     assert_equal("Node(5) <-> Node(7) <-> Node(11) <-> Node(13) <-> ", str(list_))
     assert_equal(" <-> Node(13) <-> Node(11) <-> Node(7) <-> Node(5)", list_.get_reversed_repr())
 
+    slice_list = list_.slice(0, 2)
+    assert_equal("Node(5) -> Node(7) -> ", str(slice_list))
+    slice_list = list_.slice(1, 4)
+    assert_equal("Node(7) -> Node(11) -> Node(13) -> ", str(slice_list))
+
     list_.remove(7)
     assert_equal("Node(5) <-> Node(11) <-> Node(13) <-> ", str(list_))
 
@@ -121,6 +126,11 @@ def test_list():
     assert_equal(" <-> Node(11) <-> Node(1)", list_.get_reversed_repr())
     assert_false(list_.pop(100))
     assert_equal(" <-> Node(11) <-> Node(1)", list_.get_reversed_repr())
+
+    list_.remove(1)
+    assert_equal(" <-> Node(11)", list_.get_reversed_repr())
+    list_.remove(11)
+    assert_equal("", str(list_))
 
 
 if __name__ == "__main__":
