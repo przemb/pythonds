@@ -21,13 +21,17 @@ class DoublyLinkedList(SinglyLinkedList):
         self.head = None
         self.tail = None
 
+    def __iter__(self, current=None):
+        if current is None:
+            for node in super(DoublyLinkedList, self).__iter__():
+                yield node
+        else:
+            while current is not None:
+                yield current
+                current = current.get_prev()
+
     def __repr__(self):
-        repr_str = ""
-        current = self.head
-        while current is not None:
-            repr_str = repr_str + str(current) + " <-> "
-            current = current.get_next()
-        return repr_str
+        return super(DoublyLinkedList, self).__repr__(" <-> ")
 
     def _update_internals_rem(self, previous, current):
         continuation = current.get_next()
@@ -49,12 +53,11 @@ class DoublyLinkedList(SinglyLinkedList):
         new.set_prev(current)
 
     def get_reversed_repr(self):
-        reversed_str = ""
-        current = self.tail
-        while current is not None:
-            reversed_str = reversed_str + " <-> " + str(current)
-            current = current.get_prev()
-        return reversed_str
+        reversed_str = []
+        iter_ = self.__iter__(self.tail)
+        for node in iter_:
+            reversed_str.append(" <-> " + str(node))
+        return "".join(reversed_str)
 
     # add at the beginning
     def add(self, item):

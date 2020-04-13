@@ -27,13 +27,19 @@ class SinglyLinkedList:
     def __init__(self):
         self.head = None
 
-    def __repr__(self):
-        repr_str = ""
+    def __iter__(self):
         current = self.head
         while current is not None:
-            repr_str = repr_str + str(current) + " -> "
+            yield current
             current = current.get_next()
-        return repr_str
+
+    def __repr__(self, arrow=" -> "):
+        str_repr = []
+        for node in self:
+            str_repr.append(str(node))
+        else:
+            str_repr.append("")
+        return arrow.join(str_repr)
 
     def is_empty(self):
         return self.head is None
