@@ -4,8 +4,8 @@ from nose.tools import assert_equal
 class ChangeProblem:
     _counter = 0
 
-    def __init__(self):
-        self.coinValueList = [1, 5, 10, 25]  # available coins
+    def __init__(self, coins=[1, 5, 10, 25]):
+        self.coinValueList = coins  # available coins
         self.known_results = {value: 1 for value in self.coinValueList}
 
     def get_min_n_coins(self, change):
@@ -26,14 +26,15 @@ class ChangeProblem:
 
 
 change = ChangeProblem()
-assert_equal(3, change.get_min_n_coins(7))
 assert_equal(6, change.get_min_n_coins(63))  # 63 = 25 + 25 + 10 + 1 + 1 + 1
-assert_equal(207, change._counter)  # check number of recursive calls
+assert_equal(206, change._counter)  # check number of recursive calls
+assert_equal(3, ChangeProblem().get_min_n_coins(12))
+assert_equal(3, ChangeProblem().get_min_n_coins(7))
 
 
 class ChangeProblemIter:
-    def __init__(self):
-        self.coinValueList = [1, 5, 10, 25]  # available coins
+    def __init__(self, coins=[1, 5, 10, 25]):
+        self.coinValueList = coins # available coins
         self.known_results = {value: 1 for value in self.coinValueList}
 
     def get_min_n_coins(self, change):
@@ -50,10 +51,14 @@ class ChangeProblemIter:
         return self.known_results[change]
 
 
+assert_equal(3, ChangeProblemIter().get_min_n_coins(7))
+assert_equal(6, ChangeProblemIter().get_min_n_coins(63))  # 63 = 25 + 25 + 10 + 1 + 1 + 1
+assert_equal(3, ChangeProblemIter().get_min_n_coins(12))
+assert_equal(2, ChangeProblemIter([2, 3, 5, 6]).get_min_n_coins(10))
+assert_equal(3, ChangeProblemIter([1, 5, 10, 25, 21]).get_min_n_coins(63))
 
-change_iter = ChangeProblemIter()
-assert_equal(3, change_iter.get_min_n_coins(7))
-assert_equal(6, change_iter.get_min_n_coins(63))  # 63 = 25 + 25 + 10 + 1 + 1 + 1
+#  ---------------------------------------------------------
+
 
 class ChangeProblemIntro:
     _counter = 0
