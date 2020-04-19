@@ -36,6 +36,22 @@ class KnapsackIter:
                 # k.print_table()
         return self.saved_max_values[len(self.items_weight_value)][input_weight]
 
+    def find_used_items(self):
+        """Backtrace and find used items"""
+        used_items = {}
+        items_list = list(self.items_weight_value)
+        w = self.input_weight
+        for i in range(len(self.items_weight_value), 0, -1):
+            wi = items_list[i-1]  # compensate shifted index (-1)
+            vi = self.items_weight_value[wi]
+            if self.saved_max_values[i-1][w] == self.saved_max_values[i][w]:
+                pass  # wi is not used
+            elif self.saved_max_values[i-1][w-wi] + vi == self.saved_max_values[i][w]:
+                used_items[wi] = vi  # wi is used
+                w = w - wi
+            i = i - 1
+        return used_items
+
 
 k = KnapsackIter(5)
 assert_equal(k.find_max_value(), 8)  # 6 vs 7 vs 8
@@ -52,10 +68,11 @@ assert_equal(k.find_max_value(), 17)  # 8 + 6 + 3
 
 kpk = KnapsackIter(10, {6: 30, 3: 14, 4: 16, 2: 9})
 assert_equal(kpk.find_max_value(), 46)
+assert_equal(kpk.find_used_items(), {4: 16, 6: 30})
 
 kpk = KnapsackIter(10, {5: 10, 4: 40, 6: 30, 3: 50})
 assert_equal(kpk.find_max_value(), 90)
-
+assert_equal(kpk.find_used_items(), {4: 40, 3: 50})
 
 # why elms are not repeated?
 # example:
