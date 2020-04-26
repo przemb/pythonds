@@ -34,6 +34,7 @@ def shell_sort_min(container, increment=3):
 
 
 def shell_sort(container):
+    """Version with variable number of increments"""
     increment = len(container) // 2
 
     while increment > 0:
