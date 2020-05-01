@@ -1,13 +1,11 @@
-from select import select
-
 from nose.tools import assert_equal, assert_true, assert_false, assert_raises
 
 
 class Map:
     def __init__(self, size=11):
         self.size = size
-        self.slots = [None] * self.size
-        self.data = [None] * self.size
+        self.slots = [None] * self.size  # container with hashes
+        self.data = [None] * self.size   # container with values
 
     def __repr__(self):
         str_repr = "{"
@@ -48,7 +46,7 @@ class Map:
     def _hash_function(self, key):
         return key % self.size
 
-    def _re_hash_function(self, oldhash):
+    def _re_hash_function(self, oldhash):  # linear probing
         return (oldhash + 1) % self.size
 
     def put(self, key, value):
@@ -61,8 +59,8 @@ class Map:
             self.slots[hash_] = key
             self.data[hash_] = value
         else:
-            if self.slots[hash_] == key: # this key exists
-                self.slots[hash_] = value # overwrite
+            if self.slots[hash_] == key:  # this key exists
+                self.slots[hash_] = value  # overwrite
             else:
                 new_hash = self._re_hash_function(hash_)
                 while self.slots[new_hash] is not None and self.slots[new_hash] != key:
