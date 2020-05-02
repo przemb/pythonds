@@ -1,5 +1,6 @@
 from nose.tools import assert_equal, assert_raises
 from binary_tree import BinaryTree
+from operator import add, sub, mul, truediv
 
 # parse example input: (3 + (4 * 5))
 # and save it as a tree
@@ -42,8 +43,8 @@ class ParseTree:
         self.current = self.current.get_right_child()
 
     def _process_number(self, c):
-            self.current.set_root_value(int(c))
-            self.current = self.parent_stack.pop()
+        self.current.set_root_value(int(c))
+        self.current = self.parent_stack.pop()
 
     def run(self):
         self._parse_input()
@@ -57,6 +58,24 @@ class ParseTree:
             else:
                 self._process_number(c)
 
+    def calculate(self):
+        return self._calculate(self.tree)
+
+    def _calculate(self, tree=None):
+        left_child = tree.get_left_child()
+        right_child = tree.get_right_child()
+
+        if left_child is None and right_child is None:  # base case
+            return tree.root
+        else:
+            operators = {'+': add, '-': sub, '*': mul, '/': truediv}
+
+            operator_fn = operators[tree.get_root_value()]
+            # simplified:
+            # tmp = self._calculate(left_child) + self._calculate(right_child)
+            tmp = operator_fn(self._calculate(left_child), self._calculate(right_child))
+            return tmp
+
 
 p = ParseTree("(3 + (4 * 5))")
 p._parse_input()
@@ -66,7 +85,9 @@ p.run()
 assert_equal('+', p.tree.root)
 assert_equal(3, p.tree.get_left_child().root)
 assert_equal('*', p.tree.get_right_child().root)
+assert_equal(23, p.calculate())
+
 
 p = ParseTree("((7 + 3) * (5 - 2))")
 p.run()
-
+assert_equal(30, p.calculate())
