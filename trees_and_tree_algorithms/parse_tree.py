@@ -21,6 +21,9 @@ class ParseTree:
         self.parent_stack = []  # pseudo stack to keep track of current and parent
         self.current = self.tree
 
+    def __repr__(self):
+        return str(self.tree)
+
     def _parse_input(self):
         tmp = self.raw_input.replace(" ", "")
         self.parsed_input = list(tmp)
@@ -76,18 +79,33 @@ class ParseTree:
             tmp = operator_fn(self._calculate(left_child), self._calculate(right_child))
             return tmp
 
+    def draw_dummy(self):
+        return self._draw_d(self.tree)
 
-p = ParseTree("(3 + (4 * 5))")
-p._parse_input()
-assert_equal(['(', '3', '+', '(', '4', '*', '5', ')', ')'], p.parsed_input)
+    def _draw_d(self, tree):
+        left_child = tree.get_left_child()
+        right_child = tree.get_right_child()
 
-p.run()
-assert_equal('+', p.tree.root)
-assert_equal(3, p.tree.get_left_child().root)
-assert_equal('*', p.tree.get_right_child().root)
-assert_equal(23, p.calculate())
+        if left_child is None and right_child is None:  # base case
+            return f"{tree.root} "
+        else:
+            return f" {tree.get_root_value()}\n " \
+                   f"{self._draw_d(left_child)} {self._draw_d(right_child)}\n"
 
 
-p = ParseTree("((7 + 3) * (5 - 2))")
-p.run()
-assert_equal(30, p.calculate())
+if __name__ == "__main__":
+    p = ParseTree("(3 + (4 * 5))")
+    p._parse_input()
+    assert_equal(['(', '3', '+', '(', '4', '*', '5', ')', ')'], p.parsed_input)
+
+    p.run()
+    assert_equal('+', p.tree.root)
+    assert_equal(3, p.tree.get_left_child().root)
+    assert_equal('*', p.tree.get_right_child().root)
+    assert_equal(23, p.calculate())
+    print(p)
+
+    p = ParseTree("((7 + 3) * (5 - 2))")
+    p.run()
+    assert_equal(30, p.calculate())
+    print(p)
