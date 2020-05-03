@@ -46,7 +46,7 @@ class BinaryTree:
             self._prepare_drawing(self, 0)
 
         width = len(self.draw_container)
-        str_repr = ""
+        str_repr = "\n"
 
         for level, elems in self.draw_container.items():
             margin = '  ' * (width - level)
@@ -55,7 +55,6 @@ class BinaryTree:
             for elem in elems:
                 str_repr += margin + str(elem)
             str_repr += '\n'
-        str_repr += '\n'
         return str_repr
 
     def _prepare_drawing(self, tree, level):
@@ -75,6 +74,84 @@ class BinaryTree:
                 self.draw_container[level].append(right_child.root)
                 self._prepare_drawing(right_child, level)
 
+    def preorder(self):
+        self._preorder_r()
+        print()
+
+    def _preorder_r(self):
+        print(self.root, end=' ')
+        if self.left_child:
+            self.left_child._preorder_r()
+        if self.right_child:
+            self.right_child._preorder_r()
+
+    def preorder_str(self):
+        return self._preorder_str_r(self)
+
+    def _preorder_str_r(self, tree):
+        if tree.left_child is None and tree.right_child is None:
+            return f"{tree.root}"
+        else:
+            result = f"{tree.get_root_value()}"
+            if tree.left_child:
+                result += f" {self._preorder_str_r(tree.left_child)}"
+            if tree.right_child:
+                result += f" {self._preorder_str_r(tree.right_child)}"
+            return result
+
+    def postorder(self):
+        self._postorder_r()
+        print()
+
+    def _postorder_r(self):
+        if self.left_child:
+            self.left_child._postorder_r()
+        if self.right_child:
+            self.right_child._postorder_r()
+        print(self.root, end=' ')
+
+    def postortder_str(self):
+        return self._postorder_str_r(self)
+
+    def _postorder_str_r(self, tree):
+        if tree.left_child is None and tree.right_child is None:
+            return f"{tree.root}"
+        else:
+            result = ""
+            if tree.left_child:
+                result += f"{self._postorder_str_r(tree.left_child)} "
+            if tree.right_child:
+                result += f"{self._postorder_str_r(tree.right_child)} "
+            result += f"{tree.get_root_value()}"
+            return result
+
+    def inorder(self):
+        self._inorder_r()
+        print()
+
+    def _inorder_r(self):
+        if self.left_child:
+            self.left_child._inorder_r()
+        print(self.root, end=' ')
+        if self.right_child:
+            self.right_child._inorder_r()
+
+    def inorder_str(self):
+        return self._inorder_str_r(self)
+
+    def _inorder_str_r(self, tree):
+        if tree.left_child is None and tree.right_child is None:
+            return f"{tree.root}"
+        else:
+            result = ""
+            if tree.left_child:
+                result += f"{self._inorder_str_r(tree.left_child)} "
+            result += f"{tree.get_root_value()} "
+            if tree.right_child:
+                result += f"{self._inorder_str_r(tree.right_child)}"
+            return result
+
+
 
 def build_tree():
     r = BinaryTree('a')
@@ -93,7 +170,7 @@ def main():
     assert_equal('e', tree.get_right_child().get_left_child().get_root_value())
 
     # test visual repr
-    exp = "      a\n    b    c\n     d  e  f\n\n"
+    exp = "\n      a\n    b    c\n     d  e  f\n"
     assert_equal(exp, str(tree))
 
     # human friendly form:
@@ -102,6 +179,9 @@ def main():
     #     d  e  f
 
     print(tree)
+    assert_equal("a b d c e f", tree.preorder_str())
+    assert_equal("d b e f c a", tree.postortder_str())
+    assert_equal("b d a e c f", tree.inorder_str())
 
 
 if __name__ == "__main__":

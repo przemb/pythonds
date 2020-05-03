@@ -111,6 +111,10 @@ if __name__ == "__main__":
     #    3    *
     #        4  5
 
+    assert_equal("+ 3 * 4 5", p.tree.preorder_str())
+    assert_equal("3 4 5 * +", p.tree.postortder_str())
+    assert_equal("3 + 4 * 5", p.tree.inorder_str())
+
     p = ParseTree("((7 + 3) * (5 - 2))")
     p.run()
     assert_equal(30, p.calculate())
@@ -119,3 +123,8 @@ if __name__ == "__main__":
     #         *
     #       +    -
     #     7  3  5  2
+
+
+    assert_equal("* + 7 3 - 5 2", p.tree.preorder_str())
+    assert_equal("7 3 + 5 2 - *", p.tree.postortder_str())
+    assert_equal("7 + 3 * 5 - 2", p.tree.inorder_str())
