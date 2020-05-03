@@ -80,6 +80,8 @@ class ParseTree:
             return tmp
 
     def draw_dummy(self):
+        """Dummy way to produce visual input. This method was replaced with prepare_drawing(),
+        but lets keep if for edu purposes."""
         return self._draw_d(self.tree)
 
     def _draw_d(self, tree):
@@ -105,7 +107,15 @@ if __name__ == "__main__":
     assert_equal(23, p.calculate())
     print(p)
 
+    #      +
+    #    3    *
+    #        4  5
+
     p = ParseTree("((7 + 3) * (5 - 2))")
     p.run()
     assert_equal(30, p.calculate())
     print(p)
+
+    #         *
+    #       +    -
+    #     7  3  5  2
