@@ -41,14 +41,16 @@ class BinaryTree:
         return self.root
 
     def prepare_drawing(self):
-        self.draw_container[0].append(self.root)
-        self._prepare_drawing(self, 0)
+        if len(self.draw_container) == 0:
+            self.draw_container[0].append(self.root)
+            self._prepare_drawing(self, 0)
+
         width = len(self.draw_container)
         str_repr = ""
 
         for level, elems in self.draw_container.items():
             margin = '  ' * (width - level)
-            missing_elem_margin = '   ' * (2**level - len(elems))
+            missing_elem_margin = '   ' * (2 ** level - len(elems))
             str_repr += missing_elem_margin
             for elem in elems:
                 str_repr += margin + str(elem)
@@ -89,6 +91,15 @@ def main():
     assert_equal('c', tree.get_right_child().get_root_value())
     assert_equal('d', tree.get_left_child().get_right_child().get_root_value())
     assert_equal('e', tree.get_right_child().get_left_child().get_root_value())
+
+    # test visual repr
+    exp = "      a\n    b    c\n     d  e  f\n\n"
+    assert_equal(exp, str(tree))
+
+    # human friendly form:
+    #      a
+    #    b    c
+    #     d  e  f
 
     print(tree)
 
