@@ -1,4 +1,5 @@
 from nose.tools import assert_equal, assert_raises, assert_true, assert_false
+from collections import defaultdict
 
 # note:
 # previous MAP ADT:
@@ -12,6 +13,7 @@ class BinarySearchTree:
     def __init__(self):
         self.root = None
         self.size = 0
+        self.draw_container = defaultdict(list)
 
     def __setitem__(self, key, value):
         self.put(key, value)
@@ -92,7 +94,7 @@ class BinarySearchTree:
     def _delete_target_node(self, target_node):
         if target_node is None:
             self._node_not_found()
-        elif target_node.is_root() and len(self) == 1:  # 0. single root?
+        elif target_node.is_root() and len(self) == 1:  # 0. one elem list?
             self._delete_root()
         elif target_node.is_leaf():                     # 1. no nodes!
             self._delete_v_leaf(target_node)
@@ -124,7 +126,63 @@ class BinarySearchTree:
 
     def _delete_v_single_child(self, target_node):
         """Delete parent - variant with single child"""
-        return self._delete(target_node)
+        if target_node.has_left_child():
+            self._delete_v_single_left_child_(target_node)
+        else:
+            self._delete_v_single_right_child(target_node)
+        self.size -= 1
+
+    @staticmethod
+    def _delete_v_single_left_child_(target_node):
+        if target_node.is_left_child():
+            target_node.parent.left_child = target_node.left_child
+            target_node.left_child.parent = target_node.parent
+
+        elif target_node.is_right_child():
+            target_node.parent.right_child = target_node.left_child
+            target_node.left_child.parent = target_node.parent
+        else:  # it must be a root!
+            target_node.update_node_data(key=target_node.left_child.key,
+                                         value=target_node.left_child.value,
+                                         left_child=target_node.left_child.left_child,
+                                         right_child=target_node.left_child.right_child)
+
+    @staticmethod
+    def _delete_v_single_right_child(target_node):
+        if target_node.is_left_child():
+            target_node.parent.left_child = target_node.right_child
+            target_node.right_child.parent = target_node.parent
+
+        elif target_node.is_right_child():
+            target_node.parent.right_child = target_node.right_child
+            target_node.right_child.parent = target_node.parent
+        else:  # it must be a root!
+            target_node.update_node_data(key=target_node.right_child.key,
+                                         value=target_node.right_child.value,
+                                         left_child=target_node.right_child.left_child,
+                                         right_child=target_node.right_child.right_child)
+
+    def prepare_parent_child_dict(self):
+        """Create and return dict which presents relations between nodes:
+        ret: {parent: [child1, child2], ...}
+        """
+        self.draw_container.clear()
+        self.draw_container[0].append(self.root.key)
+        self._prepare_parent_child_dict(self.root)
+
+    def _prepare_parent_child_dict(self, tree):
+        left_child = tree.left_child
+        right_child = tree.right_child
+
+        if left_child is None and right_child is None:  # base case
+            return
+        else:
+            if left_child is not None:
+                self.draw_container[tree.key].append(left_child.key)
+                self._prepare_parent_child_dict(left_child)
+            if right_child is not None:
+                self.draw_container[tree.key].append(right_child.key)
+                self._prepare_parent_child_dict(right_child)
 
 
 class TreeNode:
@@ -247,7 +305,7 @@ def test_delete_leaf():
     assert_equal(None, bst.root.left_child)
 
 
-def test_delete_magic():
+def test_del_keyword():
     bst = BinarySearchTree()
     bst[7] = 'seven'
     bst[6] = 'six'
@@ -258,6 +316,54 @@ def test_delete_magic():
     assert_equal(None, bst.root.left_child)
 
 
+def test_delete_with_single_child_right():
+    bst = BinarySearchTree()
+    data = [17, 5, 25, 11, 2, 9, 16, 7, 35, 29, 38]
+    for elem in data:
+        bst.put(elem, '')
+
+    bst.prepare_parent_child_dict()
+    assert_equal({0: [17], 17: [5, 25], 5: [2, 11], 11: [9, 16],
+                  9: [7], 25: [35], 35: [29, 38]}, bst.draw_container)
+
+    bst.delete(25)
+    bst.prepare_parent_child_dict()
+    assert_equal({0: [17], 17: [5, 35], 5: [2, 11], 11: [9, 16],
+                  9: [7], 35: [29, 38]}, bst.draw_container)
+    assert_equal(10, len(bst))
+
+
+def test_delete_with_single_child_left():
+    bst = BinarySearchTree()
+    data = [17, 5, 25, 11, 2, 9, 16, 7, 35, 29, 38]
+    for elem in data:
+        bst.put(elem, '')
+
+    bst.prepare_parent_child_dict()
+    assert_equal({0: [17], 17: [5, 25], 5: [2, 11], 11: [9, 16],
+                  9: [7], 25: [35], 35: [29, 38]}, bst.draw_container)
+
+    bst.delete(9)
+    bst.prepare_parent_child_dict()
+    assert_equal({0: [17], 17: [5, 25], 5: [2, 11], 11: [7, 16],
+                  25: [35], 35: [29, 38]}, bst.draw_container)
+    assert_equal(10, len(bst))
+
+def test_delete_with_single_child_root():
+    bst = BinarySearchTree()
+    data = [17, 25, 35, 29, 38]
+    for elem in data:
+        bst.put(elem, '')
+
+    bst.prepare_parent_child_dict()
+    assert_equal({0: [17], 17: [25], 25: [35], 35: [29, 38]}, bst.draw_container)
+
+    bst.delete(17)
+    bst.prepare_parent_child_dict()
+    assert_equal({0: [25], 25: [35], 35: [29, 38]}, bst.draw_container)
+    assert_equal(4, len(bst))
+
+
 if __name__ == "__main__":
     test_put()
     test_get()
@@ -266,3 +372,7 @@ if __name__ == "__main__":
     test_delete_empty()
     test_delete_root()
     test_delete_leaf()
+    test_del_keyword()
+    test_delete_with_single_child_right()
+    test_delete_with_single_child_left()
+    test_delete_with_single_child_root()
