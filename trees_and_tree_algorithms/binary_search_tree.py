@@ -1,4 +1,4 @@
-from nose.tools import assert_equal, assert_raises
+from nose.tools import assert_equal, assert_raises, assert_true, assert_false
 
 # note:
 # previous MAP ADT:
@@ -165,7 +165,16 @@ def test_get():
     assert_equal('three', bst[3])
 
 
+def test_contains():
+    bst = BinarySearchTree()
+    bst[7] = 'seven'
+    assert_true(7 in bst)
+    assert_false(1 in bst)
+    assert_raises(TypeError, bst.__contains__, 'a')
+
+
 if __name__ == "__main__":
     test_put()
     test_get()
     test_repeating_key()
+    test_contains()
