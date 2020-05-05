@@ -5,6 +5,7 @@ from nose.tools import assert_equal, assert_true
 # sorting list: O(n log(n))
 # BUT
 # with BinaryHeap enqueue and dequeue is O(log(n)) !
+# build_heap(list_of_keys) is O(n)!
 
 
 class BinaryHeap:                   # p - parent, 2p - left child, 2p + 1 - right child
