@@ -20,7 +20,7 @@ class BinarySearchTree:
         return self.get(item)
 
     def __delitem__(self, key):
-        pass
+        self.delete(key)
 
     def __len__(self):
         return self.size
@@ -82,6 +82,50 @@ class BinarySearchTree:
         if type(key) is not int and type(key) is not float:
             raise TypeError
 
+    def delete(self, key):
+        if len(self) > 0:
+            target_node = self._get_r(self.root, key)
+            self._delete_target_node(target_node)
+        else:
+            self._node_not_found()
+
+    def _delete_target_node(self, target_node):
+        if target_node is None:
+            self._node_not_found()
+        elif target_node.is_root() and len(self) == 1:  # 0. single root?
+            self._delete_root()
+        elif target_node.is_leaf():                     # 1. no nodes!
+            self._delete_v_leaf(target_node)
+        elif target_node.has_both_children():           # 2. both children
+            self._delete_v_both_children(target_node)
+        else:                                           # 3. single child
+            self._delete_v_single_child(target_node)
+        return True
+
+    def _node_not_found(self):
+        raise KeyError('Key not found in the tree!')
+
+    def _delete_root(self):
+        """Delete root - when tree has one elem"""
+        self.root = None
+        self.size -= 1
+
+    def _delete_v_leaf(self, target_node):
+        """Delete node - variant with leaf"""
+        if target_node.is_left_child():
+            target_node.parent.left_child = None
+        else:
+            target_node.parent.right_child = None
+        self.size -= 1
+
+    def _delete_v_both_children(self, target_node):
+        """Delete parent - variant with both children"""
+        return self._delete(target_node)
+
+    def _delete_v_single_child(self, target_node):
+        """Delete parent - variant with single child"""
+        return self._delete(target_node)
+
 
 class TreeNode:
     def __init__(self, key, value, left_child=None, right_child=None, parent=None):
@@ -111,6 +155,9 @@ class TreeNode:
 
     def has_any_children(self):
         return self.left_child or self.right_child
+
+    def has_both_children(self):
+        return self.left_child and self.right_child
 
     def update_node_data(self, key, value, left_child, right_child):
         self.key = key
@@ -173,8 +220,49 @@ def test_contains():
     assert_raises(TypeError, bst.__contains__, 'a')
 
 
+def test_delete_empty():
+    bst = BinarySearchTree()
+    assert_equal(0, len(bst))
+    assert_raises(KeyError, bst.delete, 1)
+
+
+def test_delete_root():
+    bst = BinarySearchTree()
+    bst[7] = 'seven'
+    assert_raises(KeyError, bst.delete, 1)
+
+    bst.delete(7)
+    assert_equal(0, len(bst))
+    assert_equal(None, bst.root)
+
+
+def test_delete_leaf():
+    bst = BinarySearchTree()
+    bst[7] = 'seven'
+    bst[6] = 'six'
+
+    bst.delete(6)
+    assert_equal(1, len(bst))
+    assert_equal(7, bst.root.key)
+    assert_equal(None, bst.root.left_child)
+
+
+def test_delete_magic():
+    bst = BinarySearchTree()
+    bst[7] = 'seven'
+    bst[6] = 'six'
+
+    del bst[6]
+    assert_equal(1, len(bst))
+    assert_equal(7, bst.root.key)
+    assert_equal(None, bst.root.left_child)
+
+
 if __name__ == "__main__":
     test_put()
     test_get()
     test_repeating_key()
     test_contains()
+    test_delete_empty()
+    test_delete_root()
+    test_delete_leaf()
