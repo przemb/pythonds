@@ -32,7 +32,26 @@ class BinarySearchTree:
         pass
 
     def put(self, key, value):
-        pass
+        # check if tree has root
+        if self.root is None:
+            self.root = TreeNode(key, value)
+        else:
+            self._put_r(self.root, key, value)
+        self.size += 1
+
+    def _put_r(self, current_node, new_key, new_value):
+
+        if new_key < current_node.key:
+            if current_node.has_left_child():
+                self._put_r(current_node.left_child, new_key, new_value)
+            else:
+                current_node.left_child = TreeNode(new_key, new_value, parent=current_node)
+
+        elif new_key > current_node.key:
+            if current_node.has_right_child():
+                self._put_r(current_node.right_child, new_key, new_value)
+            else:
+                current_node.right_child = TreeNode(new_key, new_value, parent=current_node)
 
     def get(self, key):
         pass
