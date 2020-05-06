@@ -122,7 +122,13 @@ class BinarySearchTree:
 
     def _delete_v_both_children(self, target_node):
         """Delete parent - variant with both children"""
-        return self._delete(target_node)
+        successor = target_node._find_successor()
+        successor._disconnect_and_update()  # disconnect successor from previous family
+
+        # "overwrite" target with successor data
+        target_node.key = successor.key
+        target_node.value = successor.value
+        self.size -= 1
 
     def _delete_v_single_child(self, target_node):
         """Delete parent - variant with single child"""
@@ -226,6 +232,45 @@ class TreeNode:
         if self.has_right_child():
             self.right_child = right_child
             self.right_child.parent = self
+
+    def _find_successor(self):
+        """Find successor which will replace target node.
+        Successor:
+        a) preserves relations between left child and right child of target node
+        b) has no more than one child
+        c) has the next largest key in the subtree
+        """
+        if self.has_right_child():
+            return self.right_child._find_min_key()
+        else:
+            # not essential now, to do later
+            return None
+
+    def _find_min_key(self):
+        """Iterate on the left branch to the leaf. The leaf has the min key!"""
+        current_node = self
+        while current_node.has_left_child():
+            current_node = current_node.left_child
+        return current_node
+
+    def _disconnect_and_update(self):
+        """Disconnect successor from other nodes, and  update new family relations"""
+        if self.is_leaf():
+            if self.is_left_child():
+                self.parent.left_child = None
+            else:
+                self.parent.right_child = None
+        else:  # has one child
+            if self.has_left_child():
+                _child = self.left_child
+            else:
+                _child = self.right_child
+
+            if self.is_left_child():
+                self.parent.left_child = _child
+            else:
+                self.parent.right_child = _child
+            _child.parent = self.parent
 
 
 def test_put():
@@ -349,6 +394,7 @@ def test_delete_with_single_child_left():
                   25: [35], 35: [29, 38]}, bst.draw_container)
     assert_equal(10, len(bst))
 
+
 def test_delete_with_single_child_root():
     bst = BinarySearchTree()
     data = [17, 25, 35, 29, 38]
@@ -364,6 +410,44 @@ def test_delete_with_single_child_root():
     assert_equal(4, len(bst))
 
 
+def test_delete_with_two_children():
+    bst = BinarySearchTree()
+    data = [17, 5, 11, 2, 9, 16, 7, 35, 8, 29, 38]
+    for elem in data:
+        bst.put(elem, '')
+    bst.prepare_parent_child_dict()
+    assert_equal({0: [17], 17: [5, 35], 5: [2, 11], 11: [9, 16],
+                  9: [7], 7: [8], 35: [29, 38]}, bst.draw_container)
+
+    bst.delete(5)
+    bst.prepare_parent_child_dict()
+    assert_equal({0: [17], 17: [7, 35], 7: [2, 11], 11: [9, 16],
+                  9: [8], 35: [29, 38]}, bst.draw_container)
+
+    del bst[35]
+    bst.prepare_parent_child_dict()
+    assert_equal({0: [17], 17: [7, 38], 7: [2, 11], 11: [9, 16],
+                  9: [8], 38: [29]}, bst.draw_container)
+    assert_equal(9, len(bst))
+
+
+def test_delete_with_two_children_root():
+    bst = BinarySearchTree()
+    data = [17, 5, 11, 2, 9, 16, 7, 35, 8, 29, 38]
+    for elem in data:
+        bst.put(elem, '')
+    bst.prepare_parent_child_dict()
+    assert_equal({0: [17], 17: [5, 35], 5: [2, 11], 11: [9, 16],
+                  9: [7], 7: [8], 35: [29, 38]}, bst.draw_container)
+
+    del bst[17]
+    bst.prepare_parent_child_dict()
+    assert_equal({0: [29], 29: [5, 35], 5: [2, 11], 11: [9, 16],
+                  9: [7], 7: [8], 35: [38]}, bst.draw_container)
+    assert_equal(29, bst.root.key)
+    assert_equal(10, len(bst))
+
+
 if __name__ == "__main__":
     test_put()
     test_get()
@@ -376,3 +460,5 @@ if __name__ == "__main__":
     test_delete_with_single_child_right()
     test_delete_with_single_child_left()
     test_delete_with_single_child_root()
+    test_delete_with_two_children()
+    test_delete_with_two_children_root()
