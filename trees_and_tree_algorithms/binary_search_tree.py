@@ -31,7 +31,7 @@ class BinarySearchTree:
         return self.get(item) is not None
 
     def __iter__(self):
-        pass
+        return self.root.__iter__()
 
     def put(self, key, value):
         self._validate(key)
@@ -272,6 +272,28 @@ class TreeNode:
                 self.parent.right_child = _child
             _child.parent = self.parent
 
+    def inorder(self):
+        """Lets keep this method to better understand why I implemented below __iter__ in such way ;)"""
+        self._inorder()
+        print()
+
+    def _inorder(self):
+        if self.has_left_child():
+            self.left_child._inorder()
+        print(self.key, end=' ')
+        if self.has_right_child():
+            self.right_child._inorder()
+
+    def __iter__(self):
+        if self:
+            if self.has_left_child():
+                for node in self.left_child:
+                    yield node
+            yield self.key
+            if self.has_right_child():
+                for node in self.right_child:
+                    yield node
+
 
 def test_put():
     bst = BinarySearchTree()
@@ -448,6 +470,15 @@ def test_delete_with_two_children_root():
     assert_equal(10, len(bst))
 
 
+def test_iterator():
+    bst = BinarySearchTree()
+    data = [17, 5, 11, 2, 9, 16, 7, 35, 8, 29, 38]
+    for elem in data:
+        bst.put(elem, '')
+
+    assert_equal([2, 5, 7, 8, 9, 11, 16, 17, 29, 35, 38], list(iter(bst)))
+
+
 if __name__ == "__main__":
     test_put()
     test_get()
@@ -462,3 +493,4 @@ if __name__ == "__main__":
     test_delete_with_single_child_root()
     test_delete_with_two_children()
     test_delete_with_two_children_root()
+    test_iterator()
