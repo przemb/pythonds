@@ -6,7 +6,7 @@ from collections import defaultdict
 # 1. binary search on list
 # 2. search on hash table
 # 3. binary search on trees  <------
-# BST property: keys less then parent are in left subtree, key greater than parent are in right subtree
+# BST property: keys less then the parent are in left subtree, keys greater than the parent are in right subtree
 
 
 class BinarySearchTree:
